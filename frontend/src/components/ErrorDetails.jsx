@@ -18,7 +18,7 @@ export default function ErrorDetails({ selectedError, onApplyFix, isApplyingFix,
         <button
           onClick={onApplyFix}
           disabled={isApplyingFix || fixApplied}
-          className={`px-4 py-2 rounded-lg text-xs font-medium transition-all flex items-center gap-2 ${
+          className={`px-4 py-2 cursor-pointer rounded-lg text-xs font-medium transition-all flex items-center gap-2 ${
             fixApplied
               ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
               : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg'

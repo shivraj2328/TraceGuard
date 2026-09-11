@@ -48,7 +48,7 @@ export default function Header({ user, onLogout }) {
             title="Log Out"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Logout</span>
+            <span className="hidden sm:inline cursor-pointer">Logout</span>
           </button>
         </div>
       </div>
