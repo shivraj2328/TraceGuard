@@ -104,11 +104,10 @@ Critical events trigger notifications via Webhooks, Email, Slack, and more — s
 
 | Layer | Technology |
 |---|---|
-| Backend | `Node.js` / `Express` *(update if different)* |
+| Backend | `Node.js` / `Express` |
 | Database | MongoDB |
-| SDKs | `packages/sdk` *(specify languages supported)* |
-| Frontend/Dashboard | *(e.g. React, Next.js — update)* |
-| Queue | *(e.g. Redis, RabbitMQ, Kafka — update)* |
+| SDKs | `packages/sdk` Node.js |
+| Frontend/Dashboard | React, Tailwind |
 | CI/CD | GitHub Actions (`.github/workflow`) |
 
 ---
@@ -140,19 +139,6 @@ npm start
 
 ---
 
-## 🗺️ Roadmap
-
-- [x] Problem definition & system design
-- [x] Event Collector API (basic)
-- [ ] Linux monitoring agent
-- [ ] Event processing & queue integration
-- [ ] MongoDB schema & storage layer
-- [ ] Dashboard UI (search, live monitoring, analytics)
-- [ ] Alerting integrations (Webhook, Email, Slack)
-- [ ] Suspicious activity detection module
-
----
-
 ## 👥 Team
 
 | Name | Role | GitHub |
@@ -176,6 +162,6 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 <div align="center">
 
-Made with ❤️ by **TraceOps** for the hackathon.
+Made with ❤️ by **TraceOps** for KurukShetra 2.0.
 
 </div>
