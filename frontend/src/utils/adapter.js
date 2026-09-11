@@ -11,7 +11,7 @@ export function formatErrorDetails(rawItem) {
     ? data.stack.split('\n').map((line) => line.trim())
     : ['No stack trace recorded for this event.'];
 
-  // Map backend breadcrumbs to UI format
+  // Map backend breadcrumbs while preserving category, level, and nested context data
   const breadcrumbs = Array.isArray(data.breadcrumbs)
     ? data.breadcrumbs.map((b) => ({
         time:
@@ -27,6 +27,11 @@ export function formatErrorDetails(rawItem) {
           b.text ||
           (b.category ? `[${b.category.toUpperCase()}] ${b.message}` : b.message || 'Log captured'),
         isError: b.isError ?? (b.level === 'error' || b.type === 'error'),
+        // Retained fields for detailed diagnostic views
+        category: b.category || 'general',
+        level: b.level || 'info',
+        message: b.message || '',
+        data: b.data || null,
       }))
     : [];
 
@@ -35,11 +40,32 @@ export function formatErrorDetails(rawItem) {
     (typeof data.stack === 'string' && data.stack.match(/:(\d+):\d+\)/)?.[1]) || '131';
 
   return {
+    // Basic Identifiers
     id: data._id || data.id || 'ERR-UNKNOWN',
     title: data.message || data.title || data.errorType || data.event || 'Unknown Error',
     environment: data.metadata?.environment || data.environment || 'production',
+    
+    // Express / Server Diagnostics
+    statusCode: data.statusCode || 500,
+    errorType: data.errorType || 'General Error',
+    projectId: data.projectId || 'N/A',
+    event: data.event || 'UNKNOWN_EVENT',
 
-    // Fallback AI Analysis derived from telemetry if AI backend isn't attached yet
+    // File Origin & Route Info
+    origin: {
+      endpoint: data.origin?.endpoint || 'N/A',
+      filePath: data.origin?.filePath || 'N/A',
+      timestamp: data.origin?.timestamps || data.createdAt || null,
+    },
+
+    // Raw Metadata & Error Payload Objects
+    metadata: data.metadata || null,
+    errorRaw: data.error || null,
+    createdAt: data.createdAt || null,
+    updatedAt: data.updatedAt || null,
+    rawStack: data.stack || null,
+
+    // AI Analysis & Proposed Patch
     aiAnalysis:
       data.aiAnalysis ||
       `Incident triggered in ${data.origin?.filePath || 'server file'} at endpoint "${
@@ -48,7 +74,6 @@ export function formatErrorDetails(rawItem) {
         data.errorType || 'Validation/Authentication failure'
       }".`,
 
-    // Proposed code patch structure
     codePatch: data.codePatch || {
       line: matchedLine,
       original: `throw new Error("${data.message || 'Invalid payload'}");`,
