@@ -105,10 +105,10 @@ exports.appendBreadcrumbs = async (req, res) => {
 //  Fetching all those responses
 exports.fetchTelemetry = async (req, res) => {
   try {
-    const { projectId } = req.params;
+    const { projectId } = req.query;
     const { page = 1, limit = 20, event, errorType } = req.query;
 
-    const filter = { projectId };
+    const filter = projectId ? { projectId } : {};
     if (event) filter.event = event;
     if (errorType) filter.errorType = errorType;
 
