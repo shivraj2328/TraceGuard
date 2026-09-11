@@ -23,6 +23,6 @@
         "mongoose": "^9.2.3",
         "morgan": "^1.10.1",
         "pino": "^10.3.1",
-        "tracegaurd": "file:/home/nikhil/code/hackthon/kaveri-hackthon/traceguard/packages/sdk"
+        "tracegaurd": "file:/home/nikhil/code/hackthon/kurukshetra/packages/tracegaurd-sdk"
     }
 }
