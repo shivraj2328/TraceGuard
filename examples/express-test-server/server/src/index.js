@@ -8,8 +8,8 @@ const cors = require("cors");
 const { default: helmet } = require("helmet");
 const authRouter = require("./routes/auth.route");
 const connectDB = require("./utils/connection");
-const skillRouter = require("./routes/skill.route");
-const internshipRouter = require("./routes/internship.route");
+// const skillRouter = require("./routes/skill.route");
+// const internshipRouter = require("./routes/internship.route");
 
 const app = express();
 
@@ -20,8 +20,8 @@ app.use(morgan("dev"));
 app.use(helmet());
 
 app.use("/api/auth", authRouter);
-app.use("/api/skill", skillRouter);
-app.use("/api/internship", internshipRouter);
+// app.use("/api/skill", skillRouter);
+// app.use("/api/internship", internshipRouter);
 
 app.get("/", (req, res) => {
   return res.status(200).json({ message: "example express server" });
@@ -29,17 +29,17 @@ app.get("/", (req, res) => {
 
 connectDB()
   .then(async () => {
-    await init({
-      connection: "http://localhost:3000/api/v1/telemetry/verify",
-      id: "project_auth_service",
-    });
     app.listen(ENV.PORT, () => {
       logger.info("server is listening on http://localhost:" + ENV.PORT);
+    });
+    await init({
+      connection: "http://localhost:5000/api/v1/telemetry/verify",
+      id: "project_test_server",
     });
   })
   .catch((err) => {
     logger.error(err?.message);
-    process.exit(1)
+    process.exit(1);
   });
 
 // module.exports = app;

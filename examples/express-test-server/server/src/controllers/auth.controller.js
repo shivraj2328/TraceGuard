@@ -155,6 +155,11 @@ const signIn = async (req, res) => {
     let user = await User.findOne({ email });
 
     if (user) {
+      console.log("user.password !== password", user.password !== password);
+      if (user.password !== password) {
+        throw new ApiError("Password error", "invalid password", 400);
+      }
+
       const response = new ApiResponse(
         "userExist",
         "user already exists",
