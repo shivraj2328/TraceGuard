@@ -13,6 +13,6 @@ router.post("/events", controller.ingestEvent);
 router.post("/events/:eventId/breadcrumbs", controller.appendBreadcrumbs);
 
 // Fetching telemetry responses
-router.get("/projects/:projectId/events", controller.fetchTelemetry);
+router.get("/projects/events", controller.fetchTelemetry);
 
 module.exports = router;
