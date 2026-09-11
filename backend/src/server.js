@@ -13,6 +13,7 @@ const { errorHandler } = require("./middleware/errorHandler");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || "development";
+//console.log(process.env.DISCORD_WEBHOOK_URL)
 
 //middlewares
 app.use(cors());
