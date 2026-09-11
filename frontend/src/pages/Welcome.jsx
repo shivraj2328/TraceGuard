@@ -42,7 +42,7 @@ export default function Welcome({ onGetStarted, onGetDemo }) {
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <button
             onClick={onGetStarted}
-            className="w-full sm:w-auto px-7 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 group"
+            className="w-full cursor-pointer sm:w-auto px-7 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 group"
           >
             Get Started
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -50,7 +50,7 @@ export default function Welcome({ onGetStarted, onGetDemo }) {
 
           <button
             onClick={onGetDemo}
-            className="w-full sm:w-auto px-7 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+            className="w-full cursor-pointer sm:w-auto px-7 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
           >
             <Play className="w-4 h-4 fill-slate-200" />
             Watch Live Demo
