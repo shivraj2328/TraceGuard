@@ -41,7 +41,7 @@ export default function ErrorDetails({ selectedError }) {
               </span>
               <button
                 onClick={() => setPrGenerated(true)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold font-mono transition-all ${
+                className={`px-3.5 cursor-pointer py-1.5 rounded-lg text-xs font-semibold font-mono transition-all ${
                   prGenerated
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                     : 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/20'
