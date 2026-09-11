@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require('express');
 const cors = require('cors');
 
+const connectDB = require("./config/db");
+
 const { logger } = require('./utils/logger'); 
 
 // Importing custom error handler middleware
@@ -27,6 +29,7 @@ app.get("/",(req,res)=>{
 });
 
 app.use(errorHandler);
+connectDB();
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
