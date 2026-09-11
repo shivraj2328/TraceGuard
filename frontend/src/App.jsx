@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from './components/Header';
 import StatsGrid from './components/StatsGrid';
+import ThroughputChart from './components/ThroughputChart';
 import EventLog from './components/EventLog';
 
 export default function App() {
@@ -9,6 +10,7 @@ export default function App() {
       <Header />
       <main className="flex-1 flex flex-col items-center">
         <StatsGrid />
+        <ThroughputChart />
         <EventLog />
       </main>
     </div>
