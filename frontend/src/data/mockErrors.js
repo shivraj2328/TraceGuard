@@ -1,40 +1,56 @@
 export const MOCK_ERRORS = [
   {
     id: 'ERR-8902',
-    title: 'Database connection timeout in auth pool',
-    service: 'auth-service',
+    title: 'TypeError: Cannot read properties of undefined (reading "map")',
+    service: 'PAYMENT-GATEWAY',
+    environment: 'production',
     severity: 'critical',
     status: 'unresolved',
     timestamp: '2 mins ago',
-    stackTrace: `Error: ConnectionTimeoutError: Could not connect to Postgres cluster at 10.0.4.12:5432
-    at Pool.connect (/app/node_modules/pg/lib/pool.js:42:11)
-    at async authenticateUser (/app/src/controllers/auth.js:18:24)
-    at async Express.middleware (/app/src/routes/index.js:89:5)`,
-    aiRecommendation: 'Database pool size exhausted due to high traffic. Increase pool limit from 20 to 50 connections in env configuration and retry idle timeout settings.'
+    events: 342,
+    users: 89,
+    aiAnalysis: 'The API response payload for `items` returned `null` instead of an empty array when the user cart was emptied during checkout.',
+    codePatch: {
+      line: 142,
+      original: 'return items.map(item => <ItemKey key={item.id} {...item} />);',
+      fix: 'return (items || []).map(item => <ItemKey key={item.id} {...item} />);'
+    },
+    stackTrace: [
+      "TypeError: Cannot read properties of undefined (reading 'map')",
+      "  at PaymentList (https://traceguard.io/assets/checkout.js:142:23)",
+      "  at renderWithHooks (https://traceguard.io/assets/vendor.js:891:14)",
+      "  at mountIndeterminateComponent (https://traceguard.io/assets/vendor.js:1024:18)"
+    ],
+    breadcrumbs: [
+      { time: '14:22:01', text: 'User clicked "Checkout"', isError: false },
+      { time: '14:22:02', text: 'POST /api/v1/cart/clear -> 200 OK', isError: false },
+      { time: '14:22:03', text: 'GET /api/v1/checkout/items -> 200 OK (Data: { items: null })', isError: false },
+      { time: '14:22:03', text: 'Uncaught Exception thrown in component <PaymentList>', isError: true }
+    ]
   },
   {
     id: 'ERR-8895',
-    title: 'Unhandled Promise Rejection: Payment Gateway 502',
-    service: 'billing-api',
+    title: 'MongoServerError: E11000 duplicate key error collection',
+    service: 'AUTH-SERVICE',
+    environment: 'production',
     severity: 'high',
     status: 'unresolved',
     timestamp: '14 mins ago',
-    stackTrace: `FetchError: Invalid HTTP response 502 Bad Gateway from https://api.stripe.com/v1/charges
-    at Response.json (/app/node_modules/node-fetch/lib/index.js:272:15)
-    at async processPayment (/app/src/services/stripe.js:45:12)`,
-    aiRecommendation: 'Upstream gateway failure. Implement exponential backoff retry mechanism (max 3 retries) and add circuit breaker fallback.'
-  },
-  {
-    id: 'ERR-8871',
-    title: 'Memory limit exceeded (OOM killed process)',
-    service: 'analytics-worker',
-    severity: 'medium',
-    status: 'resolved',
-    timestamp: '1 hour ago',
-    stackTrace: `Fatal Error: JavaScript heap out of memory
-    at AllocationSite (/app/src/workers/aggregate.js:102:18)
-    at Array.forEach (<anonymous>)
-    at processBatch (/app/src/workers/aggregate.js:98:20)`,
-    aiRecommendation: 'Memory leak detected in stream processing loop. Paginate dataset ingestion instead of loading entire payload into RAM at once.'
+    events: 12,
+    users: 4,
+    aiAnalysis: 'Concurrent user registration triggers key collisions on the unique index during high traffic bursts.',
+    codePatch: {
+      line: 88,
+      original: 'await User.create(userData);',
+      fix: 'await User.findOneAndUpdate({ email: userData.email }, userData, { upsert: true });'
+    },
+    stackTrace: [
+      "MongoServerError: E11000 duplicate key error collection: auth.users index: email_1 dup key",
+      "  at processTicksAndRejections (node:internal/process/task_queues:95:5)"
+    ],
+    breadcrumbs: [
+      { time: '14:08:12', text: 'User submitted sign-up form', isError: false },
+      { time: '14:08:13', text: 'MongoServerError: Duplicate key exception', isError: true }
+    ]
   }
 ];

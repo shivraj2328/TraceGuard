@@ -1,9 +1,9 @@
 import React from 'react';
-import { Search, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 export default function ErrorList({ errors, selectedError, onSelectError, searchQuery, setSearchQuery }) {
   return (
-    <div className="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+    <div className="lg:col-span-5 h-fit self-start bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-sm font-bold text-slate-100">Live Incident Stream</h2>
         <span className="text-xs font-mono text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full">
@@ -22,7 +22,7 @@ export default function ErrorList({ errors, selectedError, onSelectError, search
         />
       </div>
 
-      <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+      <div className="space-y-2.5 overflow-y-auto pr-1">
         {errors.map((error) => {
           const isSelected = selectedError?.id === error.id;
           return (
@@ -50,6 +50,16 @@ export default function ErrorList({ errors, selectedError, onSelectError, search
                 </span>
               </div>
               <h3 className="text-xs font-medium text-slate-100 line-clamp-1 mb-1">{error.title}</h3>
+
+              <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400 mb-2">
+                <span>
+                  <strong className="text-slate-200">{error.events || 0}</strong> events
+                </span>
+                <span>
+                  <strong className="text-slate-200">{error.users || 0}</strong> users
+                </span>
+              </div>
+
               <div className="flex items-center justify-between text-[11px] text-slate-500">
                 <span className="font-mono">{error.service}</span>
                 <span>{error.timestamp}</span>
