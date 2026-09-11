@@ -1,0 +1,388 @@
+<svg
+  width="64"
+  height="64"
+  viewBox="0 0 64 64"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+
+    <!-- Indigo Glow -->
+    <filter
+      id="blueGlow"
+      x="-100%"
+      y="-100%"
+      width="300%"
+      height="300%"
+    >
+      <feGaussianBlur
+        stdDeviation="2.5"
+        result="blur"
+      />
+
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Green Glow -->
+    <filter
+      id="greenGlow"
+      x="-100%"
+      y="-100%"
+      width="300%"
+      height="300%"
+    >
+      <feGaussianBlur
+        stdDeviation="2"
+        result="blur"
+      />
+
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Center Glow -->
+    <radialGradient id="centerGlow">
+      <stop
+        offset="0%"
+        stop-color="#00E89C"
+        stop-opacity="0.8"
+      />
+
+      <stop
+        offset="45%"
+        stop-color="#00E89C"
+        stop-opacity="0.25"
+      />
+
+      <stop
+        offset="100%"
+        stop-color="#00E89C"
+        stop-opacity="0"
+      />
+    </radialGradient>
+
+    <style>
+      .hex {
+        animation: hexPulse 2.5s ease-in-out infinite;
+        transform-origin: 32px 32px;
+      }
+
+      .center {
+        animation: centerPulse 1.7s ease-in-out infinite;
+        transform-origin: 32px 32px;
+      }
+
+      .network {
+        animation: networkPulse 2s ease-in-out infinite;
+      }
+
+      .node {
+        animation: nodePulse 1.8s ease-in-out infinite;
+      }
+
+      .scan {
+        stroke-dasharray: 5 7;
+        animation: scan 1.8s linear infinite;
+      }
+
+      @keyframes hexPulse {
+        0%, 100% {
+          opacity: 0.8;
+          filter: drop-shadow(0 0 3px #635BFF);
+        }
+
+        50% {
+          opacity: 1;
+          filter: drop-shadow(0 0 8px #635BFF);
+        }
+      }
+
+      @keyframes centerPulse {
+        0%, 100% {
+          transform: scale(0.9);
+        }
+
+        50% {
+          transform: scale(1.08);
+        }
+      }
+
+      @keyframes networkPulse {
+        0%, 100% {
+          opacity: 0.75;
+        }
+
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes nodePulse {
+        0%, 100% {
+          opacity: 0.65;
+        }
+
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes scan {
+        from {
+          stroke-dashoffset: 0;
+        }
+
+        to {
+          stroke-dashoffset: -24;
+        }
+      }
+    </style>
+
+  </defs>
+
+
+  <!-- =================================
+       HEXAGON
+  ================================= -->
+
+  <g class="hex">
+
+    <polygon
+      points="
+        32,3
+        57,17.5
+        57,46.5
+        32,61
+        7,46.5
+        7,17.5
+      "
+      fill="none"
+      stroke="#635BFF"
+      stroke-width="2.5"
+      stroke-linejoin="round"
+      filter="url(#blueGlow)"
+    />
+
+    <!-- Inner subtle hexagon -->
+    <polygon
+      points="
+        32,6
+        54,19
+        54,45
+        32,58
+        10,45
+        10,19
+      "
+      fill="none"
+      stroke="#4F46E5"
+      stroke-width="0.6"
+      opacity="0.35"
+    />
+
+  </g>
+
+
+  <!-- =================================
+       TELEMETRY CONNECTIONS
+  ================================= -->
+
+  <g
+    class="network"
+    stroke="#00E89C"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    filter="url(#greenGlow)"
+  >
+
+    <!-- Center → Top -->
+    <line
+      x1="32"
+      y1="32"
+      x2="32"
+      y2="10"
+    />
+
+    <!-- Center → Bottom Left -->
+    <line
+      x1="32"
+      y1="32"
+      x2="13"
+      y2="43"
+    />
+
+    <!-- Center → Bottom Right -->
+    <line
+      x1="32"
+      y1="32"
+      x2="51"
+      y2="43"
+    />
+
+  </g>
+
+
+  <!-- =================================
+       ANIMATED SCAN
+  ================================= -->
+
+  <g
+    class="scan"
+    stroke="#6AFFC9"
+    stroke-width="0.9"
+    fill="none"
+    stroke-linecap="round"
+  >
+
+    <line
+      x1="32"
+      y1="32"
+      x2="32"
+      y2="10"
+    />
+
+    <line
+      x1="32"
+      y1="32"
+      x2="13"
+      y2="43"
+    />
+
+    <line
+      x1="32"
+      y1="32"
+      x2="51"
+      y2="43"
+    />
+
+  </g>
+
+
+  <!-- =================================
+       CENTER GLOW
+  ================================= -->
+
+  <circle
+    cx="32"
+    cy="32"
+    r="15"
+    fill="url(#centerGlow)"
+  />
+
+
+  <!-- =================================
+       CENTER NODE
+  ================================= -->
+
+  <g
+    class="center"
+    filter="url(#greenGlow)"
+  >
+
+    <circle
+      cx="32"
+      cy="32"
+      r="5"
+      fill="#00DFA0"
+    />
+
+    <circle
+      cx="32"
+      cy="32"
+      r="7"
+      fill="none"
+      stroke="#00E89C"
+      stroke-width="0.8"
+      opacity="0.5"
+    />
+
+  </g>
+
+
+  <!-- =================================
+       TOP NODE
+  ================================= -->
+
+  <g
+    class="node"
+    filter="url(#greenGlow)"
+  >
+
+    <circle
+      cx="32"
+      cy="10"
+      r="2.2"
+      fill="#0B1724"
+      stroke="#00E89C"
+      stroke-width="1.1"
+    />
+
+    <circle
+      cx="32"
+      cy="10"
+      r="0.7"
+      fill="#00E89C"
+    />
+
+  </g>
+
+
+  <!-- =================================
+       LEFT NODE
+  ================================= -->
+
+  <g
+    class="node"
+    filter="url(#greenGlow)"
+  >
+
+    <circle
+      cx="13"
+      cy="43"
+      r="2.2"
+      fill="#0B1724"
+      stroke="#00E89C"
+      stroke-width="1.1"
+    />
+
+    <circle
+      cx="13"
+      cy="43"
+      r="0.7"
+      fill="#00E89C"
+    />
+
+  </g>
+
+
+  <!-- =================================
+       RIGHT NODE
+  ================================= -->
+
+  <g
+    class="node"
+    filter="url(#greenGlow)"
+  >
+
+    <circle
+      cx="51"
+      cy="43"
+      r="2.2"
+      fill="#0B1724"
+      stroke="#00E89C"
+      stroke-width="1.1"
+    />
+
+    <circle
+      cx="51"
+      cy="43"
+      r="0.7"
+      fill="#00E89C"
+    />
+
+  </g>
+
+</svg>

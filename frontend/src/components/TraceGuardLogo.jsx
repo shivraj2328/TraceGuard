@@ -20,15 +20,18 @@ const TraceGuardLogo = ({
       {...props}
     >
       <defs>
-        {/* =========================
+
+        {/* =================================
             BLUE / INDIGO GLOW
-        ========================= */}
+        ================================= */}
+
         <filter
           id="tgBlueGlow"
-          x="-50%"
-          y="-50%"
-          width="200%"
-          height="200%"
+          x="-100%"
+          y="-100%"
+          width="300%"
+          height="300%"
+          filterUnits="userSpaceOnUse"
         >
           <feGaussianBlur
             stdDeviation="2.5"
@@ -41,15 +44,18 @@ const TraceGuardLogo = ({
           </feMerge>
         </filter>
 
-        {/* =========================
+
+        {/* =================================
             GREEN GLOW
-        ========================= */}
+        ================================= */}
+
         <filter
           id="tgGreenGlow"
-          x="-50%"
-          y="-50%"
-          width="200%"
-          height="200%"
+          x="-100%"
+          y="-100%"
+          width="300%"
+          height="300%"
+          filterUnits="userSpaceOnUse"
         >
           <feGaussianBlur
             stdDeviation="2"
@@ -62,24 +68,60 @@ const TraceGuardLogo = ({
           </feMerge>
         </filter>
 
-        {/* Center radial glow */}
+
+        {/* =================================
+            CENTER RADIAL GLOW
+        ================================= */}
+
         <radialGradient id="tgCenterGlow">
           <stop
             offset="0%"
             stopColor="#00E89C"
             stopOpacity="0.8"
           />
+
           <stop
             offset="45%"
             stopColor="#00E89C"
             stopOpacity="0.25"
           />
+
           <stop
             offset="100%"
             stopColor="#00E89C"
             stopOpacity="0"
           />
         </radialGradient>
+
+
+        {/* =================================
+            ENDPOINT GLOW
+        ================================= */}
+
+        <radialGradient id="tgNodeGlow">
+          <stop
+            offset="0%"
+            stopColor="#00E89C"
+            stopOpacity="0.45"
+          />
+
+          <stop
+            offset="45%"
+            stopColor="#00E89C"
+            stopOpacity="0.18"
+          />
+
+          <stop
+            offset="100%"
+            stopColor="#00E89C"
+            stopOpacity="0"
+          />
+        </radialGradient>
+
+
+        {/* =================================
+            ANIMATIONS
+        ================================= */}
 
         {animated && (
           <style>
@@ -100,6 +142,10 @@ const TraceGuardLogo = ({
 
               .tg-node {
                 animation: tgNodePulse 1.8s ease-in-out infinite;
+              }
+
+              .tg-node-glow {
+                animation: tgNodeGlowPulse 1.8s ease-in-out infinite;
               }
 
               .tg-scan {
@@ -149,6 +195,18 @@ const TraceGuardLogo = ({
                 }
               }
 
+              @keyframes tgNodeGlowPulse {
+                0%, 100% {
+                  opacity: 0.35;
+                  transform: scale(0.85);
+                }
+
+                50% {
+                  opacity: 0.7;
+                  transform: scale(1.15);
+                }
+              }
+
               @keyframes tgScan {
                 from {
                   stroke-dashoffset: 0;
@@ -161,10 +219,16 @@ const TraceGuardLogo = ({
             `}
           </style>
         )}
+
       </defs>
 
-      {/* HEXAGON ICON */}
+
+      {/* =================================
+          HEXAGON ICON
+      ================================= */}
+
       <g className={animated ? "tg-hex" : ""}>
+
         <polygon
           points="
             32,4
@@ -195,9 +259,14 @@ const TraceGuardLogo = ({
           strokeWidth="0.5"
           opacity="0.35"
         />
+
       </g>
 
-      {/* TELEMETRY CONNECTIONS */}
+
+      {/* =================================
+          TELEMETRY CONNECTIONS
+      ================================= */}
+
       <g
         className={animated ? "tg-network" : ""}
         stroke="#00E89C"
@@ -205,12 +274,35 @@ const TraceGuardLogo = ({
         strokeLinecap="round"
         filter="url(#tgGreenGlow)"
       >
-        <line x1="32" y1="32" x2="32" y2="10" />
-        <line x1="32" y1="32" x2="13" y2="43" />
-        <line x1="32" y1="32" x2="51" y2="43" />
+
+        <line
+          x1="32"
+          y1="32"
+          x2="32"
+          y2="10"
+        />
+
+        <line
+          x1="32"
+          y1="32"
+          x2="13"
+          y2="43"
+        />
+
+        <line
+          x1="32"
+          y1="32"
+          x2="51"
+          y2="43"
+        />
+
       </g>
 
-      {/* ANIMATED TELEMETRY SCAN */}
+
+      {/* =================================
+          ANIMATED TELEMETRY SCAN
+      ================================= */}
+
       {animated && (
         <g
           className="tg-scan"
@@ -219,13 +311,36 @@ const TraceGuardLogo = ({
           fill="none"
           strokeLinecap="round"
         >
-          <line x1="32" y1="32" x2="32" y2="10" />
-          <line x1="32" y1="32" x2="13" y2="43" />
-          <line x1="32" y1="32" x2="51" y2="43" />
+
+          <line
+            x1="32"
+            y1="32"
+            x2="32"
+            y2="10"
+          />
+
+          <line
+            x1="32"
+            y1="32"
+            x2="13"
+            y2="43"
+          />
+
+          <line
+            x1="32"
+            y1="32"
+            x2="51"
+            y2="43"
+          />
+
         </g>
       )}
 
-      {/* CENTER GLOW */}
+
+      {/* =================================
+          CENTER GLOW
+      ================================= */}
+
       <circle
         cx="32"
         cy="32"
@@ -233,12 +348,23 @@ const TraceGuardLogo = ({
         fill="url(#tgCenterGlow)"
       />
 
-      {/* CENTER NODE */}
+
+      {/* =================================
+          CENTER NODE
+      ================================= */}
+
       <g
         className={animated ? "tg-center" : ""}
-        filter="url(#tgGreenGlow)"
       >
-        <circle cx="32" cy="32" r="4.5" fill="#00DFA0" />
+
+        <circle
+          cx="32"
+          cy="32"
+          r="4.5"
+          fill="#00DFA0"
+          filter="url(#tgGreenGlow)"
+        />
+
         <circle
           cx="32"
           cy="32"
@@ -248,13 +374,30 @@ const TraceGuardLogo = ({
           strokeWidth="0.7"
           opacity="0.5"
         />
+
       </g>
 
-      {/* TOP NODE */}
-      <g
-        className={animated ? "tg-node" : ""}
-        filter="url(#tgGreenGlow)"
-      >
+
+      {/* =================================
+          TOP ENDPOINT
+          NO SVG FILTER — CLEAN CIRCULAR GLOW
+      ================================= */}
+
+      <g>
+
+        {/* Soft circular glow */}
+        <circle
+          cx="32"
+          cy="10"
+          r="5"
+          fill="url(#tgNodeGlow)"
+          className={animated ? "tg-node-glow" : ""}
+          style={{
+            transformOrigin: "32px 10px",
+          }}
+        />
+
+        {/* Outer ring */}
         <circle
           cx="32"
           cy="10"
@@ -262,15 +405,40 @@ const TraceGuardLogo = ({
           fill="#0B1724"
           stroke="#00E89C"
           strokeWidth="1"
+          className={animated ? "tg-node" : ""}
         />
-        <circle cx="32" cy="10" r="0.7" fill="#00E89C" />
+
+        {/* Center dot */}
+        <circle
+          cx="32"
+          cy="10"
+          r="0.7"
+          fill="#00E89C"
+        />
+
       </g>
 
-      {/* LEFT NODE */}
-      <g
-        className={animated ? "tg-node" : ""}
-        filter="url(#tgGreenGlow)"
-      >
+
+      {/* =================================
+          LEFT ENDPOINT
+          NO SVG FILTER — CLEAN CIRCULAR GLOW
+      ================================= */}
+
+      <g>
+
+        {/* Soft circular glow */}
+        <circle
+          cx="13"
+          cy="43"
+          r="5"
+          fill="url(#tgNodeGlow)"
+          className={animated ? "tg-node-glow" : ""}
+          style={{
+            transformOrigin: "13px 43px",
+          }}
+        />
+
+        {/* Outer ring */}
         <circle
           cx="13"
           cy="43"
@@ -278,15 +446,40 @@ const TraceGuardLogo = ({
           fill="#0B1724"
           stroke="#00E89C"
           strokeWidth="1"
+          className={animated ? "tg-node" : ""}
         />
-        <circle cx="13" cy="43" r="0.7" fill="#00E89C" />
+
+        {/* Center dot */}
+        <circle
+          cx="13"
+          cy="43"
+          r="0.7"
+          fill="#00E89C"
+        />
+
       </g>
 
-      {/* RIGHT NODE */}
-      <g
-        className={animated ? "tg-node" : ""}
-        filter="url(#tgGreenGlow)"
-      >
+
+      {/* =================================
+          RIGHT ENDPOINT
+          NO SVG FILTER — CLEAN CIRCULAR GLOW
+      ================================= */}
+
+      <g>
+
+        {/* Soft circular glow */}
+        <circle
+          cx="51"
+          cy="43"
+          r="5"
+          fill="url(#tgNodeGlow)"
+          className={animated ? "tg-node-glow" : ""}
+          style={{
+            transformOrigin: "51px 43px",
+          }}
+        />
+
+        {/* Outer ring */}
         <circle
           cx="51"
           cy="43"
@@ -294,11 +487,24 @@ const TraceGuardLogo = ({
           fill="#0B1724"
           stroke="#00E89C"
           strokeWidth="1"
+          className={animated ? "tg-node" : ""}
         />
-        <circle cx="51" cy="43" r="0.7" fill="#00E89C" />
+
+        {/* Center dot */}
+        <circle
+          cx="51"
+          cy="43"
+          r="0.7"
+          fill="#00E89C"
+        />
+
       </g>
 
-      {/* TEXT */}
+
+      {/* =================================
+          TEXT
+      ================================= */}
+
       <text
         x="68"
         y="31"
@@ -311,7 +517,11 @@ const TraceGuardLogo = ({
         TRACEGUARD
       </text>
 
-      {/* TAGLINE */}
+
+      {/* =================================
+          TAGLINE
+      ================================= */}
+
       <text
         x="69"
         y="44"
@@ -323,6 +533,7 @@ const TraceGuardLogo = ({
       >
         REAL-TIME TELEMETRY
       </text>
+
     </svg>
   );
 };
