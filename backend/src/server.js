@@ -4,6 +4,10 @@ const express = require('express');
 const cors = require('cors');
 
 const { logger } = require('./utils/logger'); 
+
+// Importing custom error handler middleware
+const { errorHandler } = require('./middleware/errorHandler');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -21,5 +25,8 @@ app.use('/api/v1', v1Routes);
 app.get("/",(req,res)=>{
     res.status(200).json({status:"success",message:"TraceGuard API is running "});
 });
+
+app.use(errorHandler);
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
