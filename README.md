@@ -17,7 +17,7 @@
 
 ---
 
-<!-- 
+<!--
   📸 ADD A SCREENSHOT / GIF OF YOUR DASHBOARD HERE
   Example:
   <p align="center">
