@@ -4,6 +4,7 @@ import { MOCK_ERRORS } from "../data/mockErrors";
 import MetricCard from "../components/MetricCard";
 import ErrorList from "../components/ErrorList";
 import ErrorDetails from "../components/ErrorDetails";
+import IncidentStreamContainer from "../components/IncidentStreamContainer";
 
 export default function Dashboard() {
   const [errors, setErrors] = useState(MOCK_ERRORS);
@@ -67,13 +68,14 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <ErrorList
+        {/* <ErrorList
           errors={filteredErrors}
           selectedError={selectedError}
           onSelectError={setSelectedError}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-        />
+        /> */}
+        <IncidentStreamContainer />
         <ErrorDetails selectedError={selectedError} />
       </div>
     </>
