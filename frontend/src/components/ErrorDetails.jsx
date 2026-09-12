@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { GoogleGenAI } from "@google/genai";
+import ReactMarkdown from "react-markdown";
 
 export default function ErrorDetails({ selectedError }) {
   const [copiedRawJson, setCopiedRawJson] = useState(false);
@@ -367,7 +368,7 @@ export default function ErrorDetails({ selectedError }) {
 
       {/* Gemini AI Analysis Modal / Drawer Overlay */}
       {showAiModal && (
-        <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-sm z-50 p-6 flex flex-col gap-4 animate-fadeIn">
+        <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-sm z-10 p-6 flex flex-col gap-4 animate-fadeIn">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-indigo-500/20 rounded-lg border border-indigo-500/30 text-indigo-400">
@@ -395,8 +396,8 @@ export default function ErrorDetails({ selectedError }) {
                 </p>
               </div>
             ) : (
-              <div className="text-xs font-mono text-slate-300 leading-relaxed whitespace-pre-wrap bg-slate-900/80 p-4 rounded-lg border border-slate-800">
-                {aiAnalysis}
+              <div className="text-xs font-mono text-slate-300 leading-relaxed bg-slate-900/80 p-4 rounded-lg border border-slate-800">
+                <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
               </div>
             )}
           </div>
