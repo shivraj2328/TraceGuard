@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import Welcome from './pages/Welcome';
-import Auth from './pages/Auth';
-import Dashboard from './pages/Dashboard';
-import MainLayout from './layouts/MainLayout';
-import ProtectedRoute from './components/ProtectedRoute';
+import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
+import Welcome from "./pages/Welcome";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import MainLayout from "./layouts/MainLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-// Helper component to handle navigation callbacks inside the Welcome page
 function WelcomePage({ user, onDemoLogin }) {
   const navigate = useNavigate();
 
@@ -16,10 +21,10 @@ function WelcomePage({ user, onDemoLogin }) {
 
   return (
     <Welcome
-      onGetStarted={() => navigate('/login')}
+      onGetStarted={() => navigate("/login")}
       onGetDemo={() => {
         onDemoLogin();
-        navigate('/');
+        navigate("/");
       }}
     />
   );
@@ -27,56 +32,104 @@ function WelcomePage({ user, onDemoLogin }) {
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const activeUser = localStorage.getItem('traceguard_active_user');
-    if (activeUser) {
-      setUser(JSON.parse(activeUser));
+    async function verifyToken() {
+      const activeUser = localStorage.getItem("traceguard_active_user");
+
+      if (!activeUser) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const parsedUser = JSON.parse(activeUser);
+
+        if (!parsedUser?.token || parsedUser.token.startsWith("mock-")) {
+          setUser(parsedUser);
+          setLoading(false);
+          return;
+        }
+
+        // Validate backend JWT session
+        const res = await fetch("http://localhost:5000/api/v1/auth/me", {
+          headers: {
+            Authorization: `Bearer ${parsedUser.token}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setUser({ ...parsedUser, email: data.user.email });
+        } else {
+          // Token expired or invalid
+          localStorage.removeItem("traceguard_active_user");
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("Session validation failed:", err);
+      } finally {
+        setLoading(false);
+      }
     }
+
+    verifyToken();
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('traceguard_active_user');
+    localStorage.removeItem("traceguard_active_user");
     setUser(null);
   };
 
   const handleDemoLogin = () => {
     const demoUser = {
-      name: 'Alex Mercer',
-      email: 'developer@traceguard.com',
-      role: 'DevOps Engineer',
-      token: 'mock-demo-token'
+      name: "Alex Mercer",
+      email: "developer@traceguard.com",
+      role: "DevOps Engineer",
+      token: "mock-demo-token",
     };
-    localStorage.setItem('traceguard_active_user', JSON.stringify(demoUser));
+    localStorage.setItem("traceguard_active_user", JSON.stringify(demoUser));
     setUser(demoUser);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-xs font-mono text-slate-400">
+        Authenticating TraceGuard session...
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Welcome Page (Default initial landing view) */}
         <Route
           path="/welcome"
           element={<WelcomePage user={user} onDemoLogin={handleDemoLogin} />}
         />
 
-        {/* Authentication Route */}
         <Route
           path="/login"
           element={
-            user ? <Navigate to="/" replace /> : <Auth onLoginSuccess={(userData) => setUser(userData)} />
+            user ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Auth onLoginSuccess={(userData) => setUser(userData)} />
+            )
           }
         />
 
-        {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute user={user} />}>
           <Route element={<MainLayout user={user} onLogout={handleLogout} />}>
             <Route path="/" element={<Dashboard />} />
           </Route>
         </Route>
 
-        {/* Fallback Route */}
-        <Route path="*" element={<Navigate to={user ? "/" : "/welcome"} replace />} />
+        <Route
+          path="*"
+          element={<Navigate to={user ? "/" : "/welcome"} replace />}
+        />
       </Routes>
     </BrowserRouter>
   );

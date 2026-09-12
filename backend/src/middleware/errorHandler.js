@@ -1,8 +1,7 @@
+const { sendToDiscord } = require("../services/discord");
 const { logger } = require("../utils/logger");
 
-const { dispatch } = require("../services/alertDispatcher");
-
-const errorHandler = (error, req, res, next) => {
+const errorHandler = async (error, req, res, next) => {
   logger.error({
     msg: "Internal Server Error Occurred",
     message: error?.message || "internal server error",
@@ -17,22 +16,19 @@ const errorHandler = (error, req, res, next) => {
   const errorMessage = error?.error?.description || error?.message || "Internal Server Error";
   const status = typeof error.statusCode === "number" ? error.statusCode : 500;
 
-  // Non-blocking alert dispatch on 5xx server errors
-  if (status >= 500) {
-    dispatch({
-      event_type: "server_error",
-      severity: "critical",
-      service_name: "TraceGuard-Backend",
-      message: errorMessage,
-      metadata: {
-        route: req.originalUrl,
-        method: req.method,
-        statusCode: status,
-        stackTrace: error?.stack || null
+
+  if (!err.statusCode || err.statusCode === 500) {
+    await sendToDiscord({
+      title: '500 Internal API Error',
+      message: err.message,
+      severity: 'warning',
+      source: `Route: ${req.method} ${req.originalUrl}`,
+      metadata: { 
+        body: req.body, 
+        user: req.user?.id || 'anonymous' 
       }
-    }).catch(() => {});
+    }).catch(console.error); 
   }
-  
 
   return res.status(status).json({
     success: false,
