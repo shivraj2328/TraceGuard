@@ -3,7 +3,7 @@
 - queue -- need to check
 - breadcrumbs
 - systematic structured sdk-response
-- uncaught errors  -  need to check
+- uncaught errors - need to check
 - valid connections
 - valid project id
 - custom errors
