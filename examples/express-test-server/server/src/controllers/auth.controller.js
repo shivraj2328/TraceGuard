@@ -1,4 +1,4 @@
-const { getConnection, SDKResponse } = require("tracegaurd");
+const { getConnection, SDKResponse } = require("@traceops/traceguard-sdk");
 
 const User = require("../models/user.model");
 const logger = require("../utils/logger");

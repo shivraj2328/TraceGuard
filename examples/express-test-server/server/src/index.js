@@ -1,5 +1,10 @@
 require("dotenv").config();
-const { init, getConnection, SDKResponse, MetricAgent } = require("tracegaurd"); // Ensure this matches the name in your package.json
+const {
+  init,
+  getConnection,
+  SDKResponse,
+  MetricAgent,
+} = require("@traceops/traceguard-sdk"); // Ensure this matches the name in your package.json
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -22,10 +27,14 @@ app.use("/api/auth", authRouter);
 app.get("/", (req, res) => {
   return res.status(200).json({ message: "example express server" });
 });
-const tracegaurdPkg = require("tracegaurd");
+const tracegaurdPkg = require("@traceops/traceguard-sdk");
 console.log("TRACEGAURD KEYS:", Object.keys(tracegaurdPkg));
 console.log("METRIC AGENT TYPE:", typeof tracegaurdPkg.MetricAgent);
-console.log("TRACEGAURD RESOLVED TO:", require.resolve("tracegaurd"));
+console.log(
+  "TRACEGAURD RESOLVED TO:",
+  require.resolve("@traceops/traceguard-sdk"),
+);
+console.log(process?.env?.BASE_MAIN_BACKEND_URL);
 connectDB()
   .then(async () => {
     app.listen(ENV.PORT, () => {
@@ -33,12 +42,12 @@ connectDB()
     });
 
     await init({
-      connection: "http://localhost:5000/api/v1/telemetry/verify",
+      connection: `${process?.env?.BASE_MAIN_BACKEND_URL}/api/v1/telemetry/verify`,
       id: "project_test_server",
     });
 
     const agent = new MetricAgent({
-      endpoint: "http://localhost:5000/api/v1/metrics",
+      endpoint: `${process?.env?.BASE_MAIN_BACKEND_URL}/api/v1/metrics`,
       apiKey: process.env.METRICS_API_KEY,
       serviceName: "test-server",
       intervalMs: 15000,

@@ -11,5 +11,3 @@ export interface ITrace {
   request: string;
   duration: number; // ms
 }
-
-
