@@ -33,12 +33,12 @@ connectDB()
     });
 
     await init({
-      connection: "http://localhost:5000/api/v1/telemetry/verify",
+      connection: `${process.env.BASE_MAIN_BACKEND_URL}/api/v1/telemetry/verify`,
       id: "project_test_server",
     });
 
     const agent = new MetricAgent({
-      endpoint: "http://localhost:5000/api/v1/metrics",
+      endpoint: `${process.env.BASE_MAIN_BACKEND_URL}/api/v1/metrics`,
       apiKey: process.env.METRICS_API_KEY,
       serviceName: "test-server",
       intervalMs: 15000,

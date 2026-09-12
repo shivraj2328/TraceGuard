@@ -73,8 +73,8 @@ export default function ServerMetricsDashboard() {
       const historyParams = `${queryParams ? queryParams + '&' : '?'}minutes=${minutes}&limit=100`;
 
       const [latestRes, historyRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/v1/metrics/latest${queryParams}`),
-        fetch(`http://localhost:5000/api/v1/metrics/history${historyParams}`)
+        fetch(`/api/v1/metrics/latest${queryParams}`),
+        fetch(`/api/v1/metrics/history${historyParams}`)
       ]);
 
       if (!latestRes.ok || !historyRes.ok) {

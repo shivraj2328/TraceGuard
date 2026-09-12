@@ -3,7 +3,7 @@ import { Mail, Lock, User, KeyRound, ArrowRight, RefreshCw, ArrowLeft, Briefcase
 import TraceGuardLogo from '../components/TraceGuardLogo';
 
 // Aligned with process.env.PORT (5000) and versioned route (/api/v1/auth)
-const API_BASE = 'http://localhost:5000/api/v1/auth';
+const API_BASE = '/api/v1/auth';
 
 async function handleResponse(res) {
   const contentType = res.headers.get('content-type');

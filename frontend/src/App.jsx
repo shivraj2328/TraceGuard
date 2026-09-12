@@ -53,7 +53,7 @@ export default function App() {
         }
 
         // Validate backend JWT session
-        const res = await fetch("http://localhost:5000/api/v1/auth/me", {
+        const res = await fetch("/api/v1/auth/me", {
           headers: {
             Authorization: `Bearer ${parsedUser.token}`,
           },
