@@ -1,6 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mail, Lock, User, KeyRound, ArrowRight, RefreshCw, ArrowLeft, Briefcase, AlertCircle, ChevronDown, Check } from 'lucide-react';
+import { Mail, Lock, User, KeyRound, ArrowRight, RefreshCw, ArrowLeft, Briefcase, AlertCircle, ChevronDown, Check, Loader2 } from 'lucide-react';
 import TraceGuardLogo from '../components/TraceGuardLogo';
+
+// Aligned with process.env.PORT (5000) and versioned route (/api/v1/auth)
+const API_BASE = 'http://localhost:5000/api/v1/auth';
+
+async function handleResponse(res) {
+  const contentType = res.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    const data = await res.json();
+    if (!res.ok) {
+      throw { status: res.status, message: data.message || 'Request failed' };
+    }
+    return data;
+  }
+  
+  throw {
+    status: res.status,
+    message: `Server error (${res.status} ${res.statusText}). Confirm route exists under ${API_BASE}`
+  };
+}
 
 export default function Auth({ onLoginSuccess }) {
   const [isRegister, setIsRegister] = useState(false);
@@ -16,6 +35,7 @@ export default function Auth({ onLoginSuccess }) {
   const [timer, setTimer] = useState(30);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const inputRefs = useRef([]);
@@ -32,21 +52,6 @@ export default function Auth({ onLoginSuccess }) {
   ];
 
   useEffect(() => {
-    const existingUsers = localStorage.getItem('traceguard_users');
-    if (!existingUsers) {
-      const demoUsers = [
-        {
-          name: 'Alex Mercer',
-          email: 'developer@traceguard.com',
-          password: 'password123',
-          role: 'Developer'
-        }
-      ];
-      localStorage.setItem('traceguard_users', JSON.stringify(demoUsers));
-    }
-  }, []);
-
-  useEffect(() => {
     let interval;
     if (step === 'otp' && timer > 0) {
       interval = setInterval(() => setTimer((t) => t - 1), 1000);
@@ -54,7 +59,6 @@ export default function Auth({ onLoginSuccess }) {
     return () => clearInterval(interval);
   }, [step, timer]);
 
-  // Handle clicking outside the custom dropdown to close it
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -68,52 +72,77 @@ export default function Auth({ onLoginSuccess }) {
   const handleTabSwitch = (registerState) => {
     setIsRegister(registerState);
     setErrorMsg('');
+    setSuccessMsg('');
   };
 
-  const handleAuthSubmit = (e) => {
+  const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    setSuccessMsg('');
 
     if (!formData.email || !formData.password) {
       setErrorMsg('Please enter both email and password.');
       return;
     }
 
-    const registeredUsers = JSON.parse(localStorage.getItem('traceguard_users') || '[]');
-    const existingUser = registeredUsers.find(
-      (u) => u.email.toLowerCase() === formData.email.toLowerCase()
-    );
-
-    if (isRegister) {
-      if (!formData.name.trim()) {
-        setErrorMsg('Please enter your full name.');
-        return;
-      }
-      if (formData.role === 'Other' && !formData.customRole.trim()) {
-        setErrorMsg('Please specify your custom role.');
-        return;
-      }
-      if (existingUser) {
-        setErrorMsg('An account with this email already exists. Please Sign In.');
-        return;
-      }
-    } else {
-      if (!existingUser) {
-        setErrorMsg('No account found with this email. Please create an account first.');
-        return;
-      }
-      if (existingUser.password !== formData.password) {
-        setErrorMsg('Incorrect password. Please try again.');
-        return;
-      }
-    }
-
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      if (isRegister) {
+        if (!formData.name.trim()) {
+          setErrorMsg('Please enter your full name.');
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            role: formData.role === 'Other' ? formData.customRole : formData.role
+          })
+        });
+
+        const data = await handleResponse(res);
+        setSuccessMsg(data.message || 'OTP sent to your email.');
+        setStep('otp');
+        setTimer(30);
+      } else {
+        const res = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password
+          })
+        });
+
+        const data = await handleResponse(res);
+        const activeRole = formData.role === 'Other' ? formData.customRole : formData.role;
+        const sessionUser = {
+          name: formData.name || data.user.email.split('@')[0],
+          email: data.user.email,
+          role: activeRole,
+          token: data.token
+        };
+
+        localStorage.setItem('traceguard_active_user', JSON.stringify(sessionUser));
+        onLoginSuccess(sessionUser);
+      }
+    } catch (err) {
+      if (err.status === 403) {
+        setErrorMsg(err.message || 'Please verify your email.');
+        setStep('otp');
+        setTimer(30);
+      } else {
+        setErrorMsg(err.message || 'An error occurred during authentication.');
+      }
+    } finally {
       setLoading(false);
-      setStep('otp');
-      setTimer(30);
-    }, 800);
+    }
   };
 
   const handleOtpChange = (value, index) => {
@@ -133,34 +162,75 @@ export default function Auth({ onLoginSuccess }) {
     }
   };
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (otp.join('').length < 6) return;
+    const enteredOtp = otp.join('');
+    if (enteredOtp.length < 6) return;
 
+    setErrorMsg('');
+    setSuccessMsg('');
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      const registeredUsers = JSON.parse(localStorage.getItem('traceguard_users') || '[]');
-      let userData;
 
-      if (isRegister) {
-        const resolvedRole = formData.role === 'Other' ? (formData.customRole.trim() || 'Contributor') : formData.role;
-        userData = {
-          name: formData.name.trim(),
-          email: formData.email.toLowerCase(),
-          password: formData.password,
-          role: resolvedRole
-        };
-        localStorage.setItem('traceguard_users', JSON.stringify([...registeredUsers, userData]));
-      } else {
-        const foundUser = registeredUsers.find((u) => u.email.toLowerCase() === formData.email.toLowerCase());
-        userData = { name: foundUser.name, email: foundUser.email, role: foundUser.role };
-      }
+    try {
+      const res = await fetch(`${API_BASE}/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: enteredOtp
+        })
+      });
 
-      const sessionUser = { ...userData, token: 'mock-jwt-2fa-token' };
+      await handleResponse(res);
+
+      const loginRes = await fetch(`${API_BASE}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      const loginData = await handleResponse(loginRes);
+
+      const activeRole = formData.role === 'Other' ? formData.customRole : formData.role;
+      const sessionUser = {
+        name: formData.name || loginData.user.email.split('@')[0],
+        email: loginData.user.email,
+        role: activeRole,
+        token: loginData.token
+      };
+
       localStorage.setItem('traceguard_active_user', JSON.stringify(sessionUser));
       onLoginSuccess(sessionUser);
-    }, 1000);
+    } catch (err) {
+      setErrorMsg(err.message || 'Verification failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/resend-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email })
+      });
+
+      const data = await handleResponse(res);
+      setSuccessMsg(data.message || 'A new OTP has been sent.');
+      setTimer(30);
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to resend OTP.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -174,6 +244,13 @@ export default function Auth({ onLoginSuccess }) {
           <div className="mb-5 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2.5 text-red-400 text-xs">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="mb-5 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-2.5 text-emerald-400 text-xs">
+            <Check className="w-4 h-4 shrink-0" />
+            <span>{successMsg}</span>
           </div>
         )}
 
@@ -220,8 +297,6 @@ export default function Auth({ onLoginSuccess }) {
 
                   <div>
                     <label className="block text-xs font-medium text-slate-300 mb-1">Select Role</label>
-                    
-                    {/* Custom Dark Dropdown */}
                     <div className="relative" ref={dropdownRef}>
                       <Briefcase className="absolute left-3.5 top-3 w-4 h-4 text-slate-500 z-10" />
                       <button
@@ -314,8 +389,14 @@ export default function Auth({ onLoginSuccess }) {
                 disabled={loading}
                 className="w-full mt-2 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
-                {loading ? 'Validating...' : isRegister ? 'Register & Get OTP' : 'Login & Continue'}
-                <ArrowRight className="w-4 h-4" />
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    {isRegister ? 'Register & Get OTP' : 'Login & Continue'}
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </form>
           </>
@@ -354,8 +435,8 @@ export default function Auth({ onLoginSuccess }) {
               disabled={loading || otp.join('').length < 6}
               className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
-              {loading ? 'Verifying...' : 'Verify & Launch Dashboard'}
-              <KeyRound className="w-4 h-4" />
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Verify & Launch Dashboard'}
+              {!loading && <KeyRound className="w-4 h-4" />}
             </button>
 
             <div className="text-center">
@@ -364,7 +445,12 @@ export default function Auth({ onLoginSuccess }) {
                   Resend code in <span className="text-slate-300 font-mono">{timer}s</span>
                 </p>
               ) : (
-                <button type="button" onClick={() => setTimer(30)} className="text-xs text-indigo-400 hover:underline inline-flex items-center gap-1 cursor-pointer">
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={loading}
+                  className="text-xs text-indigo-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                >
                   <RefreshCw className="w-3 h-3" /> Resend Code
                 </button>
               )}
