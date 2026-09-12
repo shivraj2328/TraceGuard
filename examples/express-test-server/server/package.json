@@ -1,0 +1,28 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "description": "education platform backend",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node src/index.js",
+        "dev": "node --watch src/index.js"
+    },
+    "keywords": [
+        "education"
+    ],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+        "cors": "^2.8.6",
+        "dotenv": "^17.3.1",
+        "express": "^5.2.1",
+        "helmet": "^8.1.0",
+        "jsonwebtoken": "^9.0.3",
+        "mongoose": "^9.2.3",
+        "morgan": "^1.10.1",
+        "pino": "^10.3.1",
+        "tracegaurd": "file:C:\\Users\\Asus\\Desktop\\Hackathon\\TraceGuard\\packages\\tracegaurd-sdk"
+    }
+}
